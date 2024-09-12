@@ -1,0 +1,24 @@
+{
+  "name": "launchvoice",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@vercel/kv": "^2.0.0",
+    "@xyflow/react": "^12.1.0",
+    "lodash": "^4.17.21",
+    "next": "14.2.5",
+    "openai": "^4.54.0",
+    "react": "^18",
+    "react-dom": "^18"
+  },
+  "devDependencies": {
+    "postcss": "^8",
+    "tailwindcss": "^3.4.1"
+  }
+}
