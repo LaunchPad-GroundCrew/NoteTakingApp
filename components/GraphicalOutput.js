@@ -17,10 +17,6 @@ export default function GraphicalOutput({ accumulatedContents }) {
 
   return (
     <div className="h-full flex flex-col">
-      {/* <h2 className="text-2xl font-bold mb-2">Graphical Output</h2>
-      <h4 className="text-xl text-red-500 mb-4">
-        Graphical representation of data:
-      </h4> */}
       <div className="flex-grow overflow-y-auto">
         {/* <MindMap accumulatedContents={accumulatedContents} /> */}
         <ImageGenerator onImageGenerate={handleImageGenerate} />
