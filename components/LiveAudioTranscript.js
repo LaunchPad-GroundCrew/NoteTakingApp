@@ -348,13 +348,6 @@ const LiveAudioTranscription = ({ onTranscriptChange, isRecording }) => {
         }
       };
 
-      // recognitionRef.current.onend = () => {
-      //   console.log("Speech recognition ended");
-      //   isRecognitionActiveRef.current = false;
-      //   if (isRecording) {
-      //     restartRecognition();
-      //   }
-      // };
       recognitionRef.current.onend = () => {
         console.log("Speech recognition ended");
         isRecognitionActiveRef.current = false;
