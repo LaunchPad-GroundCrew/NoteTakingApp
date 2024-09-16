@@ -283,12 +283,14 @@ const LiveAudioTranscription = ({ onTranscriptChange, isRecording }) => {
   const [interimTranscript, setInterimTranscript] = useState("");
   const restartTimeoutRef = useRef(null);
   const isRecognitionActiveRef = useRef(false);
+  const shouldRestartRef = useRef(true);
 
   const startRecognition = () => {
     if (recognitionRef.current && !isRecognitionActiveRef.current) {
       try {
         recognitionRef.current.start();
         isRecognitionActiveRef.current = true;
+        shouldRestartRef.current = true;
         console.log("Speech recognition started");
       } catch (error) {
         console.error("Error starting speech recognition:", error);
@@ -302,6 +304,7 @@ const LiveAudioTranscription = ({ onTranscriptChange, isRecording }) => {
       try {
         recognitionRef.current.stop();
         isRecognitionActiveRef.current = false;
+        shouldRestartRef.current = false;
         console.log("Speech recognition stopped");
       } catch (error) {
         console.error("Error stopping speech recognition:", error);
@@ -345,11 +348,21 @@ const LiveAudioTranscription = ({ onTranscriptChange, isRecording }) => {
         }
       };
 
+      // recognitionRef.current.onend = () => {
+      //   console.log("Speech recognition ended");
+      //   isRecognitionActiveRef.current = false;
+      //   if (isRecording) {
+      //     restartRecognition();
+      //   }
+      // };
       recognitionRef.current.onend = () => {
         console.log("Speech recognition ended");
         isRecognitionActiveRef.current = false;
-        if (isRecording) {
-          restartRecognition();
+        if (shouldRestartRef.current && isRecording) {
+          console.log("Attempting to restart speech recognition");
+          startRecognition();
+        } else {
+          console.log("Not restarting speech recognition");
         }
       };
 
