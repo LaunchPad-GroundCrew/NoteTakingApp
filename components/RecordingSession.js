@@ -32,7 +32,7 @@ const RecordingSession = ({
     fullTranscriptRef.current = "";
     lastSavedTranscriptRef.current = "";
     // Start periodic saving
-    saveIntervalRef.current = setInterval(saveTranscript, 30000); // Every 30 seconds
+    saveIntervalRef.current = setInterval(saveTranscript, 90000); // Every 90 seconds
   };
 
   const stopRecording = () => {
