@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback } from "react";
 
 export default function TextTransformation({
   accumulatedContents,
-  isRecording,
   onSummaryRequest,
   currentSummary,
 }) {
@@ -10,31 +9,27 @@ export default function TextTransformation({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [hasContents, setHasContents] = useState(false);
+  const [actionItems, setActionItems] = useState([]);
 
   useEffect(() => {
     setHasContents(accumulatedContents.length > 0);
-    console.log(
-      "Accumulated contents in TextTransformation:",
-      accumulatedContents
-    );
   }, [accumulatedContents]);
 
   useEffect(() => {
     if (currentSummary) {
       setSummary(currentSummary);
-      console.log("TextTransformation: Summary updated", currentSummary);
+      extractActionItems(currentSummary);
     }
   }, [currentSummary]);
 
   const handleSummaryRequest = useCallback(async () => {
-    console.log("TextTransformation: Handling summary request");
     setIsLoading(true);
     setError("");
 
     try {
       const newSummary = await onSummaryRequest(accumulatedContents);
-      console.log("TextTransformation: New summary received", newSummary);
       setSummary(newSummary);
+      extractActionItems(newSummary);
     } catch (err) {
       console.error("Error fetching summary:", err);
       setError("Failed to fetch summary");
@@ -43,332 +38,204 @@ export default function TextTransformation({
     }
   }, [onSummaryRequest, accumulatedContents]);
 
+  const extractActionItems = (summaryText) => {
+    const actionItemRegex =
+      /\[(.*?)\] \(by (.*?), (.*?)\) \[id: (.*?)\]\[Status: (.*?)\]/g;
+    const items = [];
+    let match;
+    while ((match = actionItemRegex.exec(summaryText)) !== null) {
+      items.push({
+        task: match[1],
+        responsibility: match[2],
+        deadline: match[3],
+        id: match[4],
+        status: match[5],
+      });
+    }
+    setActionItems(items);
+  };
+
+  const updateActionItem = (index, field, value) => {
+    const updatedItems = [...actionItems];
+    updatedItems[index][field] = value;
+    setActionItems(updatedItems);
+    updateSummaryText(updatedItems);
+  };
+
+  const updateSummaryText = (updatedItems) => {
+    let newSummary = summary;
+    updatedItems.forEach((item) => {
+      const regex = new RegExp(
+        `\\[(.*?)\\] \\(by .*?, .*?\\) \\[id: ${item.id}\\]\\[Status: .*?\\]`
+      );
+      newSummary = newSummary.replace(
+        regex,
+        `[${item.task}] (by ${item.responsibility}, ${item.deadline}) [id: ${item.id}][Status: ${item.status}]`
+      );
+    });
+    setSummary(newSummary);
+  };
+
+  const renderActionItems = () => {
+    return actionItems.map((item, index) => (
+      <div key={index} className="mb-2 p-2 bg-gray-800 rounded">
+        <input
+          type="text"
+          value={item.task}
+          onChange={(e) => updateActionItem(index, "task", e.target.value)}
+          className="w-full bg-gray-700 text-white text-sm rounded px-2 py-1 mb-1"
+        />
+        <div className="flex items-center mt-1 space-x-2">
+          <select
+            value={item.status}
+            onChange={(e) => updateActionItem(index, "status", e.target.value)}
+            className="bg-gray-700 text-white text-sm rounded px-2 py-1"
+          >
+            <option value="Pending">Pending</option>
+            <option value="In Progress">In Progress</option>
+            <option value="Completed">Completed</option>
+          </select>
+          <input
+            type="text"
+            value={item.responsibility}
+            onChange={(e) =>
+              updateActionItem(index, "responsibility", e.target.value)
+            }
+            className="bg-gray-700 text-white text-sm rounded px-2 py-1 flex-grow"
+            placeholder="Responsible party"
+          />
+          <input
+            type="text"
+            value={item.deadline}
+            onChange={(e) =>
+              updateActionItem(index, "deadline", e.target.value)
+            }
+            className="bg-gray-700 text-white text-sm rounded px-2 py-1 w-32"
+            placeholder="Deadline"
+          />
+        </div>
+      </div>
+    ));
+  };
+
+  const removeMarkdown = (text) => {
+    return text
+      .replace(/\*\*(.*?)\*\*/g, "$1")
+      .replace(/\*(.*?)\*/g, "$1")
+      .replace(/\[(.*?)\]\(.*?\)/g, "$1")
+      .replace(/^#+\s*/gm, "")
+      .replace(/`(.*?)`/g, "$1")
+      .replace(/^>\s*/gm, "")
+      .replace(/^\s*[-+*]\s/gm, "")
+      .replace(/^\s*\d+\.\s/gm, "")
+      .trim();
+  };
+
+  const formatContent = (content, isMainTopics = false, isAbstract = false) => {
+    const cleanContent = removeMarkdown(content);
+    return cleanContent.split("\n").map((line, index) => {
+      const parts = line.split(":");
+      if (parts.length > 1) {
+        return (
+          <React.Fragment key={index}>
+            <p className={`mb-1 ${isAbstract ? "text-justify" : ""}`}>
+              <strong className="text-violet-300">{parts[0]}:</strong>{" "}
+              <span className="text-gray-300">
+                {parts.slice(1).join(":").trim()}
+              </span>
+            </p>
+            {isMainTopics && <hr className="border-gray-600 my-2" />}
+          </React.Fragment>
+        );
+      }
+      return (
+        <React.Fragment key={index}>
+          <p
+            className={`mb-1 text-gray-300 ${isAbstract ? "text-justify" : ""}`}
+          >
+            {line}
+          </p>
+          {isMainTopics && <hr className="border-gray-600 my-2" />}
+        </React.Fragment>
+      );
+    });
+  };
+
+  const renderSummarySection = (title, content) => {
+    if (!content) return null;
+    const isMainTopics = title.toLowerCase().includes("main topics and goals");
+    const isAbstract = title.toLowerCase().includes("abstract");
+    if (title.toLowerCase().includes("action items")) {
+      return (
+        <div className="mb-4">
+          <h3 className="text-lg font-semibold text-violet-400 mb-2">
+            {removeMarkdown(title)}
+          </h3>
+          {renderActionItems()}
+        </div>
+      );
+    }
+    return (
+      <div className="mb-4">
+        <h3
+          className={`text-lg font-semibold text-violet-400 mb-2 ${
+            isAbstract ? "text-center" : ""
+          }`}
+        >
+          {removeMarkdown(title)}
+        </h3>
+        <div
+          className={`bg-gray-800 p-3 rounded shadow-inner ${
+            isAbstract ? "mx-auto max-w-2xl" : ""
+          }`}
+        >
+          <div className="text-sm space-y-1">
+            {formatContent(content, isMainTopics, isAbstract)}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
-    <div className="space-y-0">
-      {/* <h2 className="text-2xl font-bold mb-4">Text Transformation</h2> */}
-      <div className="px-4">
+    <div className="space-y-2">
+      <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center">
+          <div
+            className={`w-3 h-3 rounded-full mr-2 ${
+              hasContents ? "bg-green-500" : "bg-red-500"
+            }`}
+          ></div>
+          <span className="text-sm text-gray-300">
+            {hasContents
+              ? "Content available for summarization"
+              : "No content available"}
+          </span>
+        </div>
         <button
           onClick={handleSummaryRequest}
           disabled={isLoading || !hasContents}
-          className={`px-4 py-2 text-white rounded text-sm transition-colors duration-300 ${
+          className={`px-3 py-1 text-white rounded text-sm transition-colors duration-300 ${
             isLoading || !hasContents
-              ? "bg-gray-400 cursor-not-allowed"
-              : "bg-violet-700 hover:bg-violet-600"
+              ? "bg-gray-600 cursor-not-allowed"
+              : "bg-violet-600 hover:bg-violet-700"
           }`}
         >
-          {isLoading ? "Generating Summary..." : "Generate Summary"}
+          {isLoading ? "Generating..." : "Generate Summary"}
         </button>
       </div>
 
-      {error && <p className="text-red-500">{error}</p>}
-      {hasContents ? (
-        <p className="px-4 text-emerald-600">
-          Content available for summarization
-        </p>
-      ) : (
-        <p className="px-4 text-amber-600">No content available yet</p>
-      )}
+      {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
+
       {summary && (
-        <div className="mt-4">
-          {/* <h4 className="text-xl text-red-500 mb-2">Abstract and Outline:</h4> */}
-          <div className="bg-black p-4 rounded-lg shadow-md">
-            <pre className="text-base text-violet-200 whitespace-pre-wrap">
-              {summary}
-            </pre>
-          </div>
+        <div className="bg-gray-900 p-4 rounded-lg shadow-lg">
+          {summary.split(/\d+\./).map((section, index) => {
+            if (index === 0) return null;
+            const [title, ...content] = section.split(":");
+            return renderSummarySection(title.trim(), content.join(":").trim());
+          })}
         </div>
       )}
     </div>
   );
 }
-
-//ADDS Improvement in UI still need to get rid of some bugss.
-// import React, { useState, useEffect, useCallback } from "react";
-
-// export default function TextTransformation({
-//   accumulatedContents,
-//   isRecording,
-//   onSummaryRequest,
-//   currentSummary,
-//   onTaskStatusUpdate,
-// }) {
-//   const [summary, setSummary] = useState("");
-//   const [isLoading, setIsLoading] = useState(false);
-//   const [error, setError] = useState("");
-//   const [hasContents, setHasContents] = useState(false);
-//   const [ideaFlowAnalysis, setIdeaFlowAnalysis] = useState(null);
-//   const [contextDetection, setContextDetection] = useState("");
-
-//   useEffect(() => {
-//     setHasContents(accumulatedContents.length > 0);
-//   }, [accumulatedContents]);
-
-//   useEffect(() => {
-//     if (currentSummary) {
-//       setSummary(currentSummary);
-//       extractIdeaFlowAnalysis(currentSummary);
-//       extractContextDetection(currentSummary);
-//     }
-//   }, [currentSummary]);
-
-//   const extractContextDetection = (summaryText) => {
-//     const match = summaryText.match(
-//       /^(Multiple speakers detected: Interactive discussion|Single speaker detected: Lecture or presentation|Speaker situation unclear)/
-//     );
-//     if (match) {
-//       setContextDetection(match[0]);
-//     } else {
-//       setContextDetection("");
-//     }
-//   };
-
-//   const extractIdeaFlowAnalysis = (summaryText) => {
-//     const match = summaryText.match(/\{[\s\S]*\}/);
-//     if (match) {
-//       try {
-//         const analysisJson = JSON.parse(match[0]);
-//         setIdeaFlowAnalysis(analysisJson);
-//       } catch (error) {
-//         console.error("Failed to parse Idea Flow Analysis:", error);
-//         setIdeaFlowAnalysis(null);
-//       }
-//     } else {
-//       setIdeaFlowAnalysis(null);
-//     }
-//   };
-
-//   const handleSummaryRequest = useCallback(async () => {
-//     setIsLoading(true);
-//     setError("");
-
-//     try {
-//       const newSummary = await onSummaryRequest(accumulatedContents);
-//       setSummary(newSummary);
-//       extractIdeaFlowAnalysis(newSummary);
-//       extractContextDetection(newSummary);
-//     } catch (err) {
-//       console.error("Error fetching summary:", err);
-//       setError("Failed to fetch summary");
-//     } finally {
-//       setIsLoading(false);
-//     }
-//   }, [onSummaryRequest, accumulatedContents]);
-
-//   const handleStatusChange = (taskId, newStatus) => {
-//     onTaskStatusUpdate(taskId, newStatus);
-//     setSummary((prevSummary) => {
-//       const updatedSummary = prevSummary.replace(
-//         new RegExp(`\\[id: ${taskId}\\] \\[Status: .*?\\]`),
-//         `[id: ${taskId}] [Status: ${newStatus}]`
-//       );
-//       return updatedSummary;
-//     });
-//   };
-
-//   // New function to remove asterisks
-//   const removeAsterisks = (text) => {
-//     return text.replace(/\*/g, "");
-//   };
-
-//   const renderSummary = () => {
-//     if (!summary) return null;
-
-//     const sections = summary
-//       .split("\n\n")
-//       .filter(
-//         (section) =>
-//           !section.startsWith("Multiple speakers detected") &&
-//           !section.startsWith("Single speaker detected") &&
-//           !section.startsWith("Speaker situation unclear")
-//       );
-//     return sections.map((section, index) => {
-//       const [title, ...content] = section.split("\n");
-//       if (
-//         title ===
-//         "9. Idea Flow Analysis (Only if multiple speakers are detected in an interactive discussion):"
-//       ) {
-//         return null; // We'll render this separately
-//       }
-//       return (
-//         <div key={index} className="mb-4">
-//           <h3 className="text-lg font-bold text-violet-300 mb-2">
-//             {removeAsterisks(title)}
-//           </h3>
-//           <div className="text-sm text-violet-100">
-//             {content.map((line, lineIndex) => {
-//               if (line.match(/^-\s.*\[id:/)) {
-//                 const [task, idAndStatus] = line.split("[id:");
-//                 const [id, status] = idAndStatus.split("] [Status:");
-//                 const [responsiblePart, deadlinePart] = task.split("(by");
-//                 const taskId = id.trim();
-//                 const currentStatus = status.replace("]", "").trim();
-//                 return (
-//                   <div key={lineIndex} className="mb-2 pl-4">
-//                     <p className="font-semibold">
-//                       {removeAsterisks(responsiblePart.trim())}
-//                     </p>
-//                     <p className="text-amber-400">
-//                       {removeAsterisks(deadlinePart.trim())}
-//                     </p>
-//                     <p className="text-gray-400">[id: {taskId}]</p>
-//                     <div className="flex items-center mt-1">
-//                       <span className="mr-2">Status:</span>
-//                       <select
-//                         value={currentStatus}
-//                         onChange={(e) =>
-//                           handleStatusChange(taskId, e.target.value)
-//                         }
-//                         className="bg-gray-700 text-white rounded px-2 py-1"
-//                       >
-//                         <option value="Pending">Pending</option>
-//                         <option value="Completed">Completed</option>
-//                         <option value="Resolved">Resolved</option>
-//                       </select>
-//                     </div>
-//                   </div>
-//                 );
-//               }
-//               if (line.startsWith("SUGGESTED:")) {
-//                 return (
-//                   <p
-//                     key={lineIndex}
-//                     className="mb-1 font-bold text-emerald-400"
-//                   >
-//                     {removeAsterisks(line)}
-//                   </p>
-//                 );
-//               }
-//               if (
-//                 line.startsWith("OPEN ISSUE:") ||
-//                 line.startsWith("OPEN QUESTION:") ||
-//                 line.startsWith("UNADDRESSED RISK:")
-//               ) {
-//                 const [label, ...rest] = line.split(":");
-//                 return (
-//                   <p key={lineIndex} className="mb-1">
-//                     <span className="font-bold text-red-400">
-//                       {removeAsterisks(label)}:
-//                     </span>
-//                     {removeAsterisks(rest.join(":"))}
-//                   </p>
-//                 );
-//               }
-//               return (
-//                 <p key={lineIndex} className="mb-1">
-//                   {removeAsterisks(line)}
-//                 </p>
-//               );
-//             })}
-//           </div>
-//         </div>
-//       );
-//     });
-//   };
-
-//   const renderIdeaFlowAnalysis = () => {
-//     if (!ideaFlowAnalysis) return null;
-
-//     return (
-//       <div className="mt-6 bg-gray-800 p-4 rounded-lg">
-//         <h3 className="text-lg font-bold text-violet-300 mb-4">
-//           Idea Flow Analysis
-//         </h3>
-//         {Object.entries(ideaFlowAnalysis).map(([key, value]) => {
-//           if (key === "overallAssessment") {
-//             return (
-//               <div key={key} className="mt-4">
-//                 <h4 className="text-md font-semibold text-violet-200 mb-2">
-//                   Overall Assessment
-//                 </h4>
-//                 <p className="text-sm text-violet-100">
-//                   {removeAsterisks(value)}
-//                 </p>
-//               </div>
-//             );
-//           }
-//           if (typeof value === "object") {
-//             return (
-//               <div key={key} className="mb-3">
-//                 <h4 className="text-md font-semibold text-violet-200 mb-1">
-//                   {key.charAt(0).toUpperCase() + key.slice(1)}
-//                 </h4>
-//                 <div className="flex items-center mb-1">
-//                   <div className="w-full bg-gray-700 rounded-full h-2.5 mr-2">
-//                     <div
-//                       className="bg-violet-600 h-2.5 rounded-full"
-//                       style={{ width: `${value.score}%` }}
-//                     ></div>
-//                   </div>
-//                   <span className="text-sm text-violet-100">{value.score}</span>
-//                 </div>
-//                 <p className="text-sm text-violet-100">
-//                   {removeAsterisks(value.description)}
-//                 </p>
-//               </div>
-//             );
-//           }
-//           if (key === "ideaFlowIndex") {
-//             return (
-//               <div key={key} className="mt-4">
-//                 <h4 className="text-md font-semibold text-violet-200 mb-1">
-//                   Idea Flow Index
-//                 </h4>
-//                 <div className="flex items-center">
-//                   <div className="w-full bg-gray-700 rounded-full h-2.5 mr-2">
-//                     <div
-//                       className="bg-violet-600 h-2.5 rounded-full"
-//                       style={{ width: `${value}%` }}
-//                     ></div>
-//                   </div>
-//                   <span className="text-sm text-violet-100">{value}</span>
-//                 </div>
-//               </div>
-//             );
-//           }
-//           return null;
-//         })}
-//       </div>
-//     );
-//   };
-
-//   return (
-//     <div className="space-y-4">
-//       <div className="py-4 px-4">
-//         <button
-//           onClick={handleSummaryRequest}
-//           disabled={isLoading || !hasContents}
-//           className={`px-4 py-2 text-white rounded text-sm transition-colors duration-300 ${
-//             isLoading || !hasContents
-//               ? "bg-gray-400 cursor-not-allowed"
-//               : "bg-violet-700 hover:bg-violet-600"
-//           }`}
-//         >
-//           {isLoading ? "Generating Summary..." : "Generate Summary"}
-//         </button>
-//       </div>
-
-//       {error && <p className="text-red-500">{error}</p>}
-//       {hasContents ? (
-//         <p className="px-4 text-emerald-600">
-//           Content available for summarization
-//         </p>
-//       ) : (
-//         <p className="px-4 text-amber-600">No content available yet</p>
-//       )}
-//       {contextDetection && (
-//         <div className="px-4 py-2 bg-blue-900 text-blue-200 rounded">
-//           <p className="font-semibold">Context Detection:</p>
-//           <p>{removeAsterisks(contextDetection)}</p>
-//         </div>
-//       )}
-//       {summary && (
-//         <div className="mt-4">
-//           <div className="bg-black p-4 rounded-lg shadow-md">
-//             {renderSummary()}
-//             {renderIdeaFlowAnalysis()}
-//           </div>
-//         </div>
-//       )}
-//     </div>
-//   );
-// }
