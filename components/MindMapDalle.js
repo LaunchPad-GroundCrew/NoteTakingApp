@@ -221,7 +221,7 @@ const MindMapDalle = ({ accumulatedContents }) => {
       !imageRequested
     ) {
       setImageRequested(true);
-      //   generateImage();
+      //   generateImage(); add later
     }
   }, [analysis, nodes, backgroundImageUrl, imageRequested]);
 
