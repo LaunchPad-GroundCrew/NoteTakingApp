@@ -394,7 +394,7 @@ const MindMapDalle = ({ accumulatedContents }) => {
   //   Ensure the dark center remains largely empty and very dark to allow for clear visibility of overlaid elements. The final effect should resemble a window of darkness framed by an emotive, expressive border of nature that tells a story about the content's mood and themes through color, brushstrokes, and abstract symbolism in vegetation.`;
   //   }, [nodes, analysis]);
 
-  //testing commit
+  //testing commit from jbmarroq
   const generateImagePrompt = useCallback(() => {
     const topics = nodes.map((node) => node.data.label).join(", ");
     const sentimentScore = analysis?.sentiment?.score || 0;
