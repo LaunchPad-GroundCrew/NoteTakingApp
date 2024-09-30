@@ -76,6 +76,19 @@ export default function TextTransformation({
     setSummary(newSummary);
   };
 
+  const getStatusColor = (status) => {
+    switch (status.toLowerCase()) {
+      case "pending":
+        return "text-red-500";
+      case "in progress":
+        return "text-yellow-500";
+      case "completed":
+        return "text-green-500";
+      default:
+        return "text-white";
+    }
+  };
+
   const renderActionItems = () => {
     return actionItems.map((item, index) => (
       <div key={index} className="mb-2 p-2 bg-gray-800 rounded">
@@ -89,7 +102,9 @@ export default function TextTransformation({
           <select
             value={item.status}
             onChange={(e) => updateActionItem(index, "status", e.target.value)}
-            className="bg-gray-700 text-white text-sm rounded px-2 py-1"
+            className={`bg-gray-700 text-sm rounded px-2 py-1 ${getStatusColor(
+              item.status
+            )}`}
           >
             <option value="Pending">Pending</option>
             <option value="In Progress">In Progress</option>
