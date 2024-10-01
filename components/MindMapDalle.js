@@ -394,89 +394,101 @@ const MindMapDalle = ({ accumulatedContents }) => {
   //   Ensure the dark center remains largely empty and very dark to allow for clear visibility of overlaid elements. The final effect should resemble a window of darkness framed by an emotive, expressive border of nature that tells a story about the content's mood and themes through color, brushstrokes, and abstract symbolism in vegetation.`;
   //   }, [nodes, analysis]);
 
-  //testing commit
-  const generateImagePrompt = useCallback(() => {
-    const topics = nodes.map((node) => node.data.label).join(", ");
-    const sentimentScore = analysis?.sentiment?.score || 0;
-    const sentimentIntensity = Math.abs(sentimentScore);
+  //
+  //   const generateImagePrompt = useCallback(() => {
+  //     const topics = nodes.map((node) => node.data.label).join(", ");
+  //     const sentimentScore = analysis?.sentiment?.score || 0;
+  //     const sentimentIntensity = Math.abs(sentimentScore);
 
-    let colorScheme,
-      brushstrokeDescription,
-      vegetationDescription,
-      moodDescription;
+  //     let colorScheme,
+  //       brushstrokeDescription,
+  //       vegetationDescription,
+  //       moodDescription;
 
-    if (sentimentScore > 0.3) {
-      colorScheme = `various spring colors, predominantly using ${Math.min(
-        Math.round(sentimentIntensity * 5),
-        5
-      )} shades of soft pinks, light yellows, pale blues, and fresh greens`;
-      brushstrokeDescription =
-        "light and airy brushstrokes, with gentle swirls and dabs of color";
-      vegetationDescription = `a vibrant spring landscape with blossoming trees, budding flowers, and fresh green leaves. Include ${Math.min(
-        Math.round(sentimentIntensity * 5),
-        5
-      )} different types of spring flowers, such as cherry blossoms, daffodils, and tulips`;
-      moodDescription = "uplifting and rejuvenating";
-    } else if (sentimentScore < -0.1) {
-      colorScheme = `dark and muted colors, predominantly using ${Math.min(
-        Math.round(sentimentIntensity * 5),
-        5
-      )} shades of deep browns, murky greys, and blacks`;
-      brushstrokeDescription =
-        "heavy and somber brushstrokes, with rough textures and dripping effects";
-      vegetationDescription = `a decaying swamp or dying forest. Show ${Math.min(
-        Math.round(sentimentIntensity * 5),
-        5
-      )} stages of decay, from withering plants to rotting logs and stagnant water. Include gnarled trees, drooping vines, and patches of slimy algae`;
-      moodDescription = "gloomy and foreboding";
-    } else {
-      colorScheme =
-        "various tones of green, ranging from soft sage to deep forest greens";
-      brushstrokeDescription =
-        "balanced and steady brushstrokes, with a mix of smooth gradients and textured areas";
-      vegetationDescription =
-        "a serene forest scene with a variety of trees, ferns, and mosses. Include different shades and textures of green foliage, creating a sense of depth and tranquility";
-      moodDescription = "calm and balanced";
-    }
+  //     if (sentimentScore > 0.3) {
+  //       colorScheme = `various spring colors, predominantly using ${Math.min(
+  //         Math.round(sentimentIntensity * 5),
+  //         5
+  //       )} shades of soft pinks, light yellows, pale blues, and fresh greens`;
+  //       brushstrokeDescription =
+  //         "light and airy brushstrokes, with gentle swirls and dabs of color";
+  //       vegetationDescription = `a vibrant spring landscape with blossoming trees, budding flowers, and fresh green leaves. Include ${Math.min(
+  //         Math.round(sentimentIntensity * 5),
+  //         5
+  //       )} different types of spring flowers, such as cherry blossoms, daffodils, and tulips`;
+  //       moodDescription = "uplifting and rejuvenating";
+  //     } else if (sentimentScore < -0.1) {
+  //       colorScheme = `dark and muted colors, predominantly using ${Math.min(
+  //         Math.round(sentimentIntensity * 5),
+  //         5
+  //       )} shades of deep browns, murky greys, and blacks`;
+  //       brushstrokeDescription =
+  //         "heavy and somber brushstrokes, with rough textures and dripping effects";
+  //       vegetationDescription = `a decaying swamp or dying forest. Show ${Math.min(
+  //         Math.round(sentimentIntensity * 5),
+  //         5
+  //       )} stages of decay, from withering plants to rotting logs and stagnant water. Include gnarled trees, drooping vines, and patches of slimy algae`;
+  //       moodDescription = "gloomy and foreboding";
+  //     } else {
+  //       colorScheme =
+  //         "various tones of green, ranging from soft sage to deep forest greens";
+  //       brushstrokeDescription =
+  //         "balanced and steady brushstrokes, with a mix of smooth gradients and textured areas";
+  //       vegetationDescription =
+  //         "a serene forest scene with a variety of trees, ferns, and mosses. Include different shades and textures of green foliage, creating a sense of depth and tranquility";
+  //       moodDescription = "calm and balanced";
+  //     }
 
-    return `Create an image with a very dark, nearly black center occupying about 75% of the total area. Surround this dark center with a vibrant halo effect inspired by expressionist painting styles, featuring nature-based imagery. The halo should be based on the following sentiment, concepts, and vegetation: ${topics}.
+  //     return `Create an image with a very dark, nearly black center occupying about 75% of the total area. Surround this dark center with a vibrant halo effect inspired by expressionist painting styles, featuring nature-based imagery. The halo should be based on the following sentiment, concepts, and vegetation: ${topics}.
 
-  Use a color scheme of ${colorScheme}. The intensity of the colors should correspond to the sentiment intensity of ${sentimentIntensity.toFixed(
-      2
-    )} on a scale from 0 to 1.
+  //   Use a color scheme of ${colorScheme}. The intensity of the colors should correspond to the sentiment intensity of ${sentimentIntensity.toFixed(
+  //       2
+  //     )} on a scale from 0 to 1.
 
-  The halo should be intense and detailed at the edges of the image, gradually diffusing and fading as it approaches the dark center, creating a smooth transition. The expressionist style in the halo should use bold, emotional brushstrokes with ${brushstrokeDescription}. The overall mood should feel ${moodDescription}.
+  //   The halo should be intense and detailed at the edges of the image, gradually diffusing and fading as it approaches the dark center, creating a smooth transition. The expressionist style in the halo should use bold, emotional brushstrokes with ${brushstrokeDescription}. The overall mood should feel ${moodDescription}.
 
-  Within the halo, paint ${vegetationDescription}. The vegetation should be rendered in an expressionist style, becoming more defined towards the edges and more abstract as it approaches the center.
+  //   Within the halo, paint ${vegetationDescription}. The vegetation should be rendered in an expressionist style, becoming more defined towards the edges and more abstract as it approaches the center.
 
-  Include abstract shapes or symbolic elements related to the topics, seamlessly integrated into the expressionist vegetation. These elements should become more defined towards the edges and more abstract as they approach the center.
+  //   Include abstract shapes or symbolic elements related to the topics, seamlessly integrated into the expressionist vegetation. These elements should become more defined towards the edges and more abstract as they approach the center.
 
-  Ensure the dark center remains largely empty and very dark to allow for clear visibility of overlaid elements. The final effect should resemble a window of darkness framed by an emotive, expressive border of nature that tells a story about the content's mood and themes through color, brushstrokes, and abstract symbolism in vegetation.`;
-  }, [nodes, analysis]);
+  //   Ensure the dark center remains largely empty and very dark to allow for clear visibility of overlaid elements. The final effect should resemble a window of darkness framed by an emotive, expressive border of nature that tells a story about the content's mood and themes through color, brushstrokes, and abstract symbolism in vegetation.`;
+  //   }, [nodes, analysis]);
 
-  const generateImage = useCallback(async () => {
-    setIsGeneratingImage(true);
-    const prompt = generateImagePrompt();
-    try {
-      const response = await fetch("/api/generate-image", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt }),
-      });
+  //   const generateImage = useCallback(async () => {
+  //     setIsGeneratingImage(true);
+  //     const prompt = generateImagePrompt();
+  //     try {
+  //       const response = await fetch("/api/generate-image", {
+  //         method: "POST",
+  //         headers: { "Content-Type": "application/json" },
+  //         body: JSON.stringify({ prompt }),
+  //       });
 
-      if (!response.ok) {
-        throw new Error("Failed to generate image");
-      }
+  //       if (!response.ok) {
+  //         throw new Error("Failed to generate image");
+  //       }
 
-      const data = await response.json();
-      setBackgroundImageUrl(data.imageUrl);
-    } catch (error) {
-      console.error("Error generating image:", error);
-      setImageRequested(false); // Reset the state to allow another attempt
-    } finally {
-      setIsGeneratingImage(false);
-    }
-  }, [generateImagePrompt]);
+  //       const data = await response.json();
+  //       setBackgroundImageUrl(data.imageUrl);
+  //     } catch (error) {
+  //       console.error("Error generating image:", error);
+  //       setImageRequested(false); // Reset the state to allow another attempt
+  //     } finally {
+  //       setIsGeneratingImage(false);
+  //     }
+  //   }, [generateImagePrompt]);
+
+  //   useEffect(() => {
+  //     if (
+  //       analysis &&
+  //       nodes.length > 0 &&
+  //       !backgroundImageUrl &&
+  //       !imageRequested
+  //     ) {
+  //       setImageRequested(true);
+  //       generateImage();
+  //     }
+  //   }, [analysis, nodes, backgroundImageUrl, imageRequested, generateImage]);
 
   useEffect(() => {
     if (
@@ -486,9 +498,9 @@ const MindMapDalle = ({ accumulatedContents }) => {
       !imageRequested
     ) {
       setImageRequested(true);
-      generateImage();
+      //   generateImage();
     }
-  }, [analysis, nodes, backgroundImageUrl, imageRequested, generateImage]);
+  }, [analysis, nodes, backgroundImageUrl]);
 
   useEffect(() => {
     if (!analysis || !analysis.roots) return;
@@ -609,7 +621,7 @@ const MindMapDalle = ({ accumulatedContents }) => {
       <div className="mindmap-container">{reactFlowInstance}</div>
       {analysis && analysis.sentiment && (
         <>
-          <div
+          {/* <div
             className="sentiment-indicator"
             onMouseEnter={() => setShowSentimentTooltip(true)}
             onMouseLeave={() => setShowSentimentTooltip(false)}
@@ -624,7 +636,7 @@ const MindMapDalle = ({ accumulatedContents }) => {
               <br />
               {analysis.sentiment.explanation}
             </div>
-          )}
+          )} */}
         </>
       )}
       {error && (
