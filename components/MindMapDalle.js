@@ -97,6 +97,33 @@ const customStyles = `
     max-width: 250px;
     z-index: 1001;
   }
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.loading-spinner {
+  border: 4px solid #f59e0b;
+  border-top: 4px solid #d97706;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
 `;
 
 const MindMapDalle = ({ accumulatedContents }) => {
@@ -109,6 +136,7 @@ const MindMapDalle = ({ accumulatedContents }) => {
   const containerRef = useRef(null);
   const [imageRequested, setImageRequested] = useState(false);
   const [showSentimentTooltip, setShowSentimentTooltip] = useState(false);
+  const [previousState, setPreviousState] = useState(null);
 
   const onConnect = useCallback(
     (params) => setEdges((eds) => addEdge(params, eds)),
@@ -894,14 +922,21 @@ const MindMapDalle = ({ accumulatedContents }) => {
           labelBgBorderRadius: 4,
         }));
 
-      setNodes(layoutNodes);
-      setEdges([...layoutEdges, ...relationshipEdges]);
+      const newState = {
+        nodes: layoutNodes,
+        edges: [...layoutEdges, ...relationshipEdges],
+        analysis: analysis,
+      };
+      setNodes(newState.nodes);
+      setEdges(newState.edges);
+      setPreviousState(newState);
     } catch (err) {
       console.error("Error processing analysis data:", err);
     }
   }, [analysis, setNodes, setEdges, createRadialLayout]);
 
   const handleReanalyze = () => {
+    setPreviousState({ nodes, edges, analysis }); // Store current state before reanalyzing
     triggerAnalysis();
     setBackgroundImageUrl(""); // Clear the current background to trigger a new generation
     setImageRequested(false); // Reset the state to allow a new image generation
@@ -922,7 +957,7 @@ const MindMapDalle = ({ accumulatedContents }) => {
         fitView
         minZoom={0.1}
         maxZoom={1.5}
-        defaultzoom={0.5}
+        defaultViewport={0.5}
         style={{ background: "transparent", zIndex: 1 }}
       >
         <Controls style={{ backgroundColor: "white", color: "black" }} />
@@ -977,7 +1012,25 @@ const MindMapDalle = ({ accumulatedContents }) => {
           />
         )}
       </div>
-      <div className="mindmap-container">{reactFlowInstance}</div>
+      <div className="mindmap-container">
+        {(loading || isGeneratingImage) && previousState ? (
+          // Render previous state while loading
+          <ReactFlow
+            nodes={previousState.nodes}
+            edges={previousState.edges}
+            fitView
+            style={{ background: "transparent", zIndex: 1, opacity: 0.5 }}
+          />
+        ) : (
+          reactFlowInstance
+        )}
+        {(loading || isGeneratingImage) && (
+          <div className="loading-overlay text-amber-500">
+            <div className="loading-spinner"></div>
+            <p>{loading ? "Analyzing..." : "Generating Image..."}</p>
+          </div>
+        )}
+      </div>
       {analysis && analysis.sentiment && (
         <>
           <div
