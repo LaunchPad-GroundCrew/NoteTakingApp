@@ -91,10 +91,10 @@ export default function QuestionAndAnswer({
         <button
           type="submit"
           disabled={isLoading}
-          className={`px-4 py-2 text-white rounded text-sm transition-colors duration-300 ${
+          className={`px-3 py-1 text-white rounded text-sm transition-colors duration-300 ${
             isLoading
               ? "bg-gray-400 cursor-not-allowed"
-              : "bg-violet-700 hover:bg-violet-600"
+              : "bg-violet-600 hover:bg-violet-700"
           }`}
         >
           {isLoading ? "Saving..." : "Add Context"}
@@ -106,10 +106,10 @@ export default function QuestionAndAnswer({
       <button
         onClick={handleSubmit}
         disabled={isLoading || newContext.trim() === ""}
-        className={`px-4 py-2 text-white rounded text-sm transition-colors duration-300 ${
+        className={`px-3 py-1 text-white rounded text-sm transition-colors duration-300 ${
           isLoading || newContext.trim() === ""
             ? "bg-gray-900  text-gray-400 cursor-not-allowed"
-            : "bg-violet-700 hover:bg-violet-600"
+            : "bg-violet-600 hover:bg-violet-700"
         }`}
       >
         {isLoading ? "Processing..." : "Ask GPT"}

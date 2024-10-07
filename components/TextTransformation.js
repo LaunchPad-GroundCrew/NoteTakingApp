@@ -91,7 +91,7 @@ export default function TextTransformation({
 
   const renderActionItems = () => {
     return actionItems.map((item, index) => (
-      <div key={index} className="mb-2 p-2 bg-gray-800 rounded">
+      <div key={item.id || index} className="mb-2 p-2 bg-gray-800 rounded">
         <input
           type="text"
           value={item.task}
@@ -152,7 +152,7 @@ export default function TextTransformation({
       const parts = line.split(":");
       if (parts.length > 1) {
         return (
-          <React.Fragment key={index}>
+          <React.Fragment key={`content-${index}`}>
             <p className={`mb-1 ${isAbstract ? "text-justify" : ""}`}>
               <strong className="text-violet-300">{parts[0]}:</strong>{" "}
               <span className="text-gray-300">
@@ -164,7 +164,7 @@ export default function TextTransformation({
         );
       }
       return (
-        <React.Fragment key={index}>
+        <React.Fragment key={`content-${index}`}>
           <p
             className={`mb-1 text-gray-300 ${isAbstract ? "text-justify" : ""}`}
           >
