@@ -28,7 +28,7 @@ export default async function handler(req, res) {
     console.log("Processed content for GPT:", processedContent);
 
     const completion = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
+      model: "gpt-4o-mini", // gpt-3.5-turbo
       messages: [
         {
           role: "system",

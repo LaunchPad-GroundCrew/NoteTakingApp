@@ -154,7 +154,7 @@ export default function TextTransformation({
         return (
           <React.Fragment key={`content-${index}`}>
             <p className={`mb-1 ${isAbstract ? "text-justify" : ""}`}>
-              <strong className="text-violet-300">{parts[0]}:</strong>{" "}
+              <strong className="text-violet-200">{parts[0]}:</strong>{" "}
               <span className="text-gray-300">
                 {parts.slice(1).join(":").trim()}
               </span>
@@ -230,10 +230,10 @@ export default function TextTransformation({
         <button
           onClick={handleSummaryRequest}
           disabled={isLoading || !hasContents}
-          className={`px-3 py-1 text-white rounded text-sm transition-colors duration-300 ${
+          className={`px-3 py-1 text-amber-300 rounded text-sm transition-colors duration-300  ${
             isLoading || !hasContents
               ? "bg-gray-600 cursor-not-allowed"
-              : "bg-violet-600 hover:bg-violet-700"
+              : "bg-violet-700 bg-opacity-70 hover:bg-violet-700 "
           }`}
         >
           {isLoading ? "Generating..." : "Generate Summary"}

@@ -92,10 +92,10 @@ const RecordingSession = ({
       <div className="flex items-center space-x-2">
         <button
           onClick={isRecording ? stopRecording : startRecording}
-          className={`px-3 py-1 text-sm text-white rounded ${
+          className={`px-3 py-1 text-sm text-amber-300 rounded ${
             isRecording
               ? "bg-red-500 hover:bg-red-600"
-              : "bg-violet-600 hover:bg-violet-700"
+              : "bg-violet-700 bg-opacity-70 hover:bg-violet-700"
           } transition-colors duration-300`}
         >
           {isRecording ? "Stop" : "Start"}

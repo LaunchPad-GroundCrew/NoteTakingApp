@@ -79,7 +79,7 @@ const customStyles = `
     left: 275px;
     background-color: rgba(0, 0, 0, 0.7);
     color: #f59e0b;
-    padding: 5px 10px;
+    padding: 5px 10px; 
     border-radius: 4px;
     font-size: 14px;
     cursor: pointer;
@@ -90,7 +90,7 @@ const customStyles = `
     bottom: 50px;
     left: 20px;
     background-color: rgba(0, 0, 0, 0.8);
-    color: white;
+    color: #f59e0b;
     padding: 10px;
     border-radius: 4px;
     font-size: 14px;
@@ -124,6 +124,24 @@ const customStyles = `
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+.react-flow__controls button {
+  background-color: rgba(0, 0, 0, 0.7);
+  border: 1px solid #f59e0b;
+  color:  #f59e0b;
+  border-bottom: none;
+}
+.react-flow__controls button:hover {
+  background-color: rgba(0, 0, 0, 0.9);
+  border: 1px solid #f59e0b;
+  color:  #f59e0b;
+}
+  .react-flow__controls button:first-child {
+  border-radius: 5px 5px 0 0;
+}
+  .react-flow__controls button:last-child {
+  border-bottom: 1px solid #f59e0b;
+  border-radius: 0 0 5px 5px;
+}
 `;
 
 const MindMapDalle = ({ accumulatedContents }) => {
@@ -145,7 +163,7 @@ const MindMapDalle = ({ accumulatedContents }) => {
 
   const getNodeColor = (level) => {
     const colors = [
-      "rgba(255, 82, 187, 0.9)", // Reddish
+      "rgba(245, 100, 219, 0.9)", // Reddish
       "rgba(76, 230, 188, 0.7)", // Light greenblue
       "rgba(0, 240, 255, 0.6)", // Blueish
       "rgba(0, 157, 255, 0.5", // sky blue
@@ -913,11 +931,11 @@ const MindMapDalle = ({ accumulatedContents }) => {
           type: "default",
           animated: true,
           style: {
-            stroke: "#FFE752",
+            stroke: "#F5DB64",
             strokeWidth: 6,
           },
           labelStyle: { fill: "#333333", fontWeight: 600, fontSize: 28 },
-          labelBgStyle: { fill: "#FFE752" },
+          labelBgStyle: { fill: "#F5DB64" },
           labelBgPadding: [6, 4],
           labelBgBorderRadius: 4,
         }));
@@ -960,17 +978,17 @@ const MindMapDalle = ({ accumulatedContents }) => {
         defaultViewport={0.5}
         style={{ background: "transparent", zIndex: 1 }}
       >
-        <Controls style={{ backgroundColor: "white", color: "black" }} />
+        <Controls />
         <Panel
           position="top-left"
           style={{ display: "flex", gap: "10px", alignItems: "center" }}
         >
           <button
             onClick={handleReanalyze}
-            className={`text-white text-sm py-1 px-3 rounded ${
+            className={`text-amber-300 text-sm py-1 px-3 rounded ${
               loading || isGeneratingImage
                 ? "bg-gray-500 cursor-not-allowed"
-                : "bg-violet-600 hover:bg-violet-700"
+                : "bg-violet-700 bg-opacity-70 hover:bg-violet-700"
             }`}
             disabled={loading || isGeneratingImage}
           >
@@ -980,11 +998,11 @@ const MindMapDalle = ({ accumulatedContents }) => {
               ? "Generating Image..."
               : "Re-analyze"}
           </button>
-          {(loading || isGeneratingImage) && (
+          {/* {(loading || isGeneratingImage) && (
             <div className="bg-yellow-100 text-yellow-800 text-xs font-semibold px-2 py-1 rounded">
               {loading ? "Analyzing..." : "Generating Image..."}
             </div>
-          )}
+          )} */}
         </Panel>
       </ReactFlow>
     ),
