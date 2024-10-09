@@ -193,7 +193,7 @@ const MindMapDalle = ({ accumulatedContents }) => {
           width: "auto",
           minWidth: "180px",
           maxWidth: "250px",
-          border: "1px solid rgba(0, 0, 0, 0.2)",
+          border: "1px solid rgba(0, 0, 0, 0.3)",
           boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
         },
       };
