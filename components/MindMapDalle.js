@@ -155,6 +155,8 @@ const MindMapDalle = ({ accumulatedContents }) => {
   const [imageRequested, setImageRequested] = useState(false);
   const [showSentimentTooltip, setShowSentimentTooltip] = useState(false);
   const [previousState, setPreviousState] = useState(null);
+  const [shouldRegenerateImage, setShouldRegenerateImage] = useState(false);
+  const [lastContentLength, setLastContentLength] = useState(0);
 
   const onConnect = useCallback(
     (params) => setEdges((eds) => addEdge(params, eds)),
@@ -860,6 +862,7 @@ const MindMapDalle = ({ accumulatedContents }) => {
   //   }, [nodes, analysis]);
 
   const generateImage = useCallback(async () => {
+    if (isGeneratingImage) return;
     setIsGeneratingImage(true);
     const prompt = generateImagePrompt();
     try {
@@ -880,20 +883,36 @@ const MindMapDalle = ({ accumulatedContents }) => {
       setImageRequested(false); // Reset the state to allow another attempt
     } finally {
       setIsGeneratingImage(false);
+      setImageRequested(false);
     }
-  }, [generateImagePrompt]);
+  }, [generateImagePrompt, isGeneratingImage]);
+
+  useEffect(() => {
+    if (accumulatedContents.length > lastContentLength) {
+      console.log("New content detected, triggering image regeneration");
+      setLastContentLength(accumulatedContents.length);
+      setImageRequested(true);
+    }
+  }, [accumulatedContents, lastContentLength]);
 
   useEffect(() => {
     if (
       analysis &&
       nodes.length > 0 &&
-      !backgroundImageUrl &&
-      !imageRequested
+      (imageRequested || !backgroundImageUrl) &&
+      !isGeneratingImage
     ) {
-      setImageRequested(true);
+      console.log("Generating new image");
       generateImage();
     }
-  }, [analysis, nodes, backgroundImageUrl, imageRequested, generateImage]);
+  }, [
+    analysis,
+    nodes,
+    backgroundImageUrl,
+    imageRequested,
+    generateImage,
+    isGeneratingImage,
+  ]);
 
   //   useEffect(() => {
   //     if (

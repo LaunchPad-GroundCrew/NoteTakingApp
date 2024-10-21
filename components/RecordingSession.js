@@ -14,6 +14,11 @@ const RecordingSession = ({
   const fullTranscriptRef = useRef("");
   const lastSavedTranscriptRef = useRef("");
   const saveIntervalRef = useRef(null);
+  const lastSummaryRequestTime = useRef(0);
+
+  // Define constants for intervals
+  const SAVE_INTERVAL = 5000; //90 sec  (adjust as needed)
+  const SUMMARY_INTERVAL = 300000; // 5 min (adjust as needed)
 
   const handleTranscriptChange = useCallback(
     (newTranscript) => {
@@ -31,8 +36,9 @@ const RecordingSession = ({
     setRecordingStartTime(Date.now());
     fullTranscriptRef.current = "";
     lastSavedTranscriptRef.current = "";
+    lastSummaryRequestTime.current = 0; // Reset last summary request time
     // Start periodic saving
-    saveIntervalRef.current = setInterval(saveTranscript, 90000); // Every 90 seconds
+    saveIntervalRef.current = setInterval(saveTranscript, SAVE_INTERVAL); // Every 90 seconds
   };
 
   const stopRecording = () => {
@@ -65,19 +71,36 @@ const RecordingSession = ({
     }
   };
 
-  const requestSummary = () => {
-    // Trigger the summary request without awaiting it
-    onSummaryRequest()
-      .then((summary) => {
-        console.log("Summary requested:", summary);
-        if (onSummaryUpdate) {
-          onSummaryUpdate(summary);
-        }
-      })
-      .catch((error) => {
-        console.error("Error getting summary:", error);
-      });
-  };
+  // const requestSummary = () => {
+  //   // Trigger the summary request without awaiting it
+  //   onSummaryRequest()
+  //     .then((summary) => {
+  //       console.log("Summary requested:", summary);
+  //       if (onSummaryUpdate) {
+  //         onSummaryUpdate(summary);
+  //       }
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error getting summary:", error);
+  //     });
+  // };
+  const requestSummary = useCallback(() => {
+    // Only request a summary if enough time has passed since the last request
+    const currentTime = Date.now();
+    if (currentTime - lastSummaryRequestTime.current >= SUMMARY_INTERVAL) {
+      onSummaryRequest()
+        .then((summary) => {
+          console.log("Summary requested:", summary);
+          if (onSummaryUpdate) {
+            onSummaryUpdate(summary);
+          }
+          lastSummaryRequestTime.current = currentTime;
+        })
+        .catch((error) => {
+          console.error("Error getting summary:", error);
+        });
+    }
+  }, [onSummaryRequest, onSummaryUpdate]);
 
   useEffect(() => {
     return () => {
