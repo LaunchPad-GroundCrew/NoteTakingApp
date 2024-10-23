@@ -17,8 +17,8 @@ const RecordingSession = ({
   const lastSummaryRequestTime = useRef(0);
 
   // Define constants for intervals
-  const SAVE_INTERVAL = 5000; //90 sec  (adjust as needed)
-  const SUMMARY_INTERVAL = 300000; // 5 min (adjust as needed)
+  const SAVE_INTERVAL = 900000; //90 sec  (adjust as needed)
+  const SUMMARY_INTERVAL = 3000000; // 5 min (adjust as needed)
 
   const handleTranscriptChange = useCallback(
     (newTranscript) => {
