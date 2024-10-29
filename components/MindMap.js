@@ -36,9 +36,9 @@ const MindMap = ({ accumulatedContents }) => {
   const createRadialLayout = useCallback((roots) => {
     const nodes = [];
     const edges = [];
-    const centerX = 300;
-    const centerY = 300;
-    const radiusStep = 200;
+    const centerX = 50;
+    const centerY = 50;
+    const radiusStep = 130;
 
     const createNode = (entity, angle, level, isRoot = false) => {
       const radius = (level + 1) * radiusStep;
@@ -223,7 +223,7 @@ const MindMap = ({ accumulatedContents }) => {
   );
 
   return (
-    <div style={{ width: "400px", height: "700px", position: "relative" }}>
+    <div style={{ width: "70%", height: "70%", position: "relative" }}>
       <style>{customStyles}</style>
       {reactFlowInstance}
       {error && (
