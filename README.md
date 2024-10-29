@@ -1,40 +1,104 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# AI Meeting Assistant 🎙️ 💭 🔄
 
-## Getting Started
+An AI-powered meeting assistant that transcribes conversations, generates summaries, and creates dynamic, sentiment-aware mind maps in real-time.
 
-First, run the development server:
+## 📸 Screenshots
+
+### Full Application View
+
+![Full Application Demo](/public/assets/screenshots/app-demo.png)
+
+### Mind Map Visualization
+
+![Mind Map View](/public/assets/screenshots/mindmap-view.png)
+
+### Transcription Interface
+
+![Transcription View](/public/assets/screenshots/transcription-view.png)
+
+## 🚀 Features
+
+- **Real-time Speech Transcription**: Captures and transcribes meeting conversations automatically
+- **Smart Text Analysis**: Generates summaries, extracts action items, and enables natural language querying
+- **Dynamic Mind Mapping**: Creates interactive visualizations of meeting content and relationships
+- **Sentiment-Aware Visualization**: Generates mood-based backgrounds using DALL-E that reflect meeting sentiment
+
+## 🛠️ Tech Stack
+
+- **Frontend**: Next.js 13, React, Tailwind CSS
+- **Backend**: Next.js API Routes
+- **Database**: Vercel KV (Redis)
+- **AI/ML**:
+  - OpenAI GPT-3.5/4 for text analysis
+  - DALL-E 3 for background generation
+  - Web Speech API for transcription
+- **Visualization**: React Flow
+
+## 🏃‍♂️ Getting Started
+
+1. Clone the repository:
+
+```bash
+git clone https://github.com/yourusername/ai-meeting-assistant.git
+```
+
+2. Install dependencies:
+
+```bash
+npm install
+```
+
+3. Set up environment variables:
+
+```bash
+REACT_OPENAI_API_KEY=your_key_here
+```
+
+4. Run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Visit `http://localhost:3000` to see the application.
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+## 📝 Environment Variables
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
+- `REACT_OPENAI_API_KEY`: Your OpenAI API key
+- Add other required environment variables...
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+## 🔧 Configuration
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+The application can be configured through the following files:
 
-## Learn More
+- `next.config.js`: Next.js configuration
+- Add other configuration files...
 
-To learn more about Next.js, take a look at the following resources:
+## 🤝 Contributing
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Contributions are welcome! Please read our [Contributing Guidelines](CONTRIBUTING.md) for details on our code of conduct and the process for submitting pull requests.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+## 📄 License
 
-## Deploy on Vercel
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 👥 Team
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+- Project Lead: [Jason Marroquin] <a href="https://github.com/jbmarroq"><img src="https://github.com/jbmarroq.png" width="50px" alt="username" /></a> [![Jason Marroquin](https://img.shields.io/badge/LinkedIn-Jason%20Marroquin-blue?style=flat-square&logo=linkedin)](https://www.linkedin.com/in/jason-marroquin)
+- Contributors: [Tuan Nguyen] <a href="https://github.com/gitcrawl"><img src="https://github.com/gitcrawl.png" width="50px" alt="username" /></a> [![Tuan Nguyen](https://img.shields.io/badge/LinkedIn-Tuan%20Nguyen-blue?style=flat-square&logo=linkedin)](https://www.linkedin.com/in/tuan-nguyen-2a7960212/)
+
+## 🙏 Acknowledgments
+
+- OpenAI for GPT and DALL-E APIs
+- React Flow team for visualization components
+- NEXT.JS for easy deployment infrastructure.
+
+## 📚 Documentation
+
+For more detailed documentation, please contact Project Lead at [![Jason Marroquin](https://img.shields.io/badge/LinkedIn-Jason%20Marroquin-blue?style=flat-square&logo=linkedin)](https://www.linkedin.com/in/jason-marroquin)
+
+## 🙏 Acknowledgments.
+
+---
+
+Developed with ❤️ at LaunchPad
